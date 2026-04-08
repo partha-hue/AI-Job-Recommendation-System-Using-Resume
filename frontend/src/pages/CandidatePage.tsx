@@ -1,188 +1,173 @@
 import { FormEvent, useEffect, useState } from "react";
 
-import { fetchHealth, recommendFromFile, recommendFromText } from "../api";
-import type { RecommendationResponse } from "../types";
+import {
+  createApplication,
+  fetchApplications,
+  fetchCandidateProfile,
+  recommendFromText,
+  updateCandidateProfile,
+} from "../api";
+import { useAuth } from "../components/AuthProvider";
+import type { ApplicationItem, CandidateProfile, RecommendationResponse } from "../types";
 
-const SAMPLE_RESUME = `Python developer with 3+ years of experience building FastAPI services, SQL-backed applications, Dockerized deployments, and React dashboards. Worked on machine learning pipelines, NLP-based resume parsing, AWS deployment, and CI/CD automation.`;
+type CandidateTab = "match" | "profile" | "applications";
+
+const EMPTY_PROFILE: CandidateProfile = {
+  headline: "",
+  location: "",
+  bio: "",
+  experience_years: 0,
+  skills: [],
+  resume_text: "",
+  links: [],
+};
 
 export function CandidatePage() {
-  const [resumeText, setResumeText] = useState(SAMPLE_RESUME);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [topK, setTopK] = useState(5);
-  const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
+  const [activeTab, setActiveTab] = useState<CandidateTab>("match");
+  const [profile, setProfile] = useState<CandidateProfile>(EMPTY_PROFILE);
+  const [applications, setApplications] = useState<ApplicationItem[]>([]);
+  const [recommendations, setRecommendations] = useState<RecommendationResponse | null>(null);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<RecommendationResponse | null>(null);
-  const [apiOnline, setApiOnline] = useState(false);
 
   useEffect(() => {
-    fetchHealth().then(setApiOnline);
-  }, []);
+    if (!token) {
+      return;
+    }
+    fetchCandidateProfile(token).then(setProfile).catch(() => undefined);
+    fetchApplications(token).then(setApplications).catch(() => undefined);
+  }, [token]);
 
-  const submitText = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-
+  const runMatch = async () => {
+    if (!token) {
+      return;
+    }
     try {
-      const payload = await recommendFromText(resumeText, topK);
-      setResult(payload);
-      setApiOnline(true);
-    } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Failed to fetch recommendations.");
-      setApiOnline(false);
-    } finally {
-      setLoading(false);
+      const data = await recommendFromText(profile.resume_text || profile.bio || "Python developer with SQL and React experience.", 5, token);
+      setRecommendations(data);
+      setError("");
+    } catch (matchError) {
+      setError(matchError instanceof Error ? matchError.message : "Failed to run match.");
     }
   };
 
-  const submitFile = async () => {
-    if (!resumeFile) {
-      setError("Choose a TXT, PDF, or DOCX resume file.");
+  const saveProfile = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!token) {
       return;
     }
-
-    setLoading(true);
-    setError("");
-
     try {
-      const payload = await recommendFromFile(resumeFile, topK);
-      setResult(payload);
-      setApiOnline(true);
-    } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Failed to upload resume.");
-      setApiOnline(false);
-    } finally {
-      setLoading(false);
+      const updated = await updateCandidateProfile(token, profile);
+      setProfile(updated);
+      setError("");
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Failed to save profile.");
+    }
+  };
+
+  const applyToJob = async (jobId: string) => {
+    if (!token) {
+      return;
+    }
+    try {
+      await createApplication(token, { job_id: jobId, cover_letter: profile.bio });
+      const data = await fetchApplications(token);
+      setApplications(data);
+      setActiveTab("applications");
+    } catch (applyError) {
+      setError(applyError instanceof Error ? applyError.message : "Failed to apply.");
     }
   };
 
   return (
     <div className="dashboard-view">
-      <section className="dashboard-header dashboard-header-tight">
+      <section className="dashboard-header">
         <div>
-          <p className="eyebrow">Candidate Match</p>
-          <h2>Analyze resumes and review ranked matches in a balanced workspace.</h2>
+          <p className="eyebrow">Candidate Dashboard</p>
+          <h2>Manage your profile, run job matching, and track applications.</h2>
         </div>
       </section>
 
-      <section className="candidate-grid">
-        <article className="panel candidate-form-panel">
-          <div className="panel-topline">
-            <div>
-              <p className="card-label">Resume Input</p>
-              <h3>Upload or paste CV content</h3>
-            </div>
+      <div className="tab-row">
+        <button type="button" className={`tab-button${activeTab === "match" ? " active" : ""}`} onClick={() => setActiveTab("match")}>
+          Match Jobs
+        </button>
+        <button type="button" className={`tab-button${activeTab === "profile" ? " active" : ""}`} onClick={() => setActiveTab("profile")}>
+          My Profile
+        </button>
+        <button
+          type="button"
+          className={`tab-button${activeTab === "applications" ? " active" : ""}`}
+          onClick={() => setActiveTab("applications")}
+        >
+          Applications
+        </button>
+      </div>
+
+      {error ? <p className="error-banner">{error}</p> : null}
+
+      {activeTab === "profile" ? (
+        <form className="panel profile-form" onSubmit={saveProfile}>
+          <div className="profile-grid">
+            <label><span>Headline</span><input value={profile.headline} onChange={(e) => setProfile({ ...profile, headline: e.target.value })} /></label>
+            <label><span>Location</span><input value={profile.location} onChange={(e) => setProfile({ ...profile, location: e.target.value })} /></label>
+            <label><span>Experience Years</span><input type="number" value={profile.experience_years} onChange={(e) => setProfile({ ...profile, experience_years: Number(e.target.value) })} /></label>
+            <label><span>Skills</span><input value={profile.skills.join(", ")} onChange={(e) => setProfile({ ...profile, skills: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) })} /></label>
           </div>
+          <label><span>Bio</span><textarea rows={5} value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} /></label>
+          <label><span>Resume Text</span><textarea rows={8} value={profile.resume_text} onChange={(e) => setProfile({ ...profile, resume_text: e.target.value })} /></label>
+          <label><span>Links</span><input value={profile.links.join(", ")} onChange={(e) => setProfile({ ...profile, links: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) })} /></label>
+          <button type="submit">Save Profile</button>
+        </form>
+      ) : null}
 
-          <form onSubmit={submitText} className="form-grid">
-            <label>
-              <span>Resume text</span>
-              <textarea
-                rows={11}
-                value={resumeText}
-                onChange={(event) => setResumeText(event.target.value)}
-                placeholder="Paste the resume text here"
-              />
-            </label>
-
-            <div className="candidate-actions">
-              <label className="compact-field">
-                <span>Top recommendations</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={topK}
-                  onChange={(event) => setTopK(Number(event.target.value))}
-                />
-              </label>
-
-              <button type="submit" disabled={loading}>
-                {loading ? "Analyzing..." : "Analyze Text"}
-              </button>
+      {activeTab === "match" ? (
+        <section className="content-grid">
+          <article className="panel">
+            <h3>Candidate Summary</h3>
+            <p className="summary">{profile.headline || "Complete your profile to improve matching."}</p>
+            <div className="chip-wrap">
+              {profile.skills.map((skill) => (
+                <span key={skill} className="chip">{skill}</span>
+              ))}
             </div>
-          </form>
+            <button type="button" onClick={runMatch}>Run Match</button>
+          </article>
 
-          <div className="upload-block candidate-upload-block">
-            <label className="file-picker">
-              <span>Attached CV</span>
-              <input
-                type="file"
-                accept=".txt,.pdf,.docx"
-                onChange={(event) => setResumeFile(event.target.files?.[0] ?? null)}
-              />
-            </label>
-            <button type="button" onClick={submitFile} disabled={loading}>
-              {loading ? "Uploading..." : "Analyze File"}
-            </button>
-          </div>
-
-          {error ? <p className="error-banner">{error}</p> : null}
-        </article>
-
-        <article className="panel candidate-results-panel">
-          <div className="panel-topline">
-            <div>
-              <p className="card-label">Recommendation Output</p>
-              <h3>Ranked roles and matched skills</h3>
-            </div>
-          </div>
-
-          {result ? (
-            <div className="candidate-results-scroll">
-              <div className="skills-row candidate-skills-row">
-                <span>Extracted skills</span>
-                <div className="chip-wrap">
-                  {result.extracted_skills.map((skill) => (
-                    <span key={skill} className="chip">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="cards">
-                {result.recommendations.map((job) => (
-                  <article key={job.job_id} className="job-card animated-card">
-                    <div className="job-card-header">
-                      <div>
-                        <h3>{job.title}</h3>
-                        <p>{job.company}</p>
-                      </div>
-                      <span className="score">{job.match_score}%</span>
+          <article className="panel">
+            <h3>Recommended Roles</h3>
+            <div className="cards">
+              {recommendations?.recommendations.map((job) => (
+                <article key={job.job_id} className="job-card">
+                  <div className="job-card-header">
+                    <div>
+                      <h3>{job.title}</h3>
+                      <p>{job.company}</p>
                     </div>
-
-                    <p className="location">{job.location}</p>
-                    <p className="summary">{job.summary}</p>
-
-                    <div className="chip-wrap">
-                      {job.matched_skills.map((skill) => (
-                        <span key={skill} className="chip matched">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-
-                    <ul className="reason-list">
-                      {job.reasons.map((reason) => (
-                        <li key={reason}>{reason}</li>
-                      ))}
-                    </ul>
-
-                    {job.missing_skills.length ? (
-                      <p className="missing">Missing: {job.missing_skills.join(", ")}</p>
-                    ) : null}
-                  </article>
-                ))}
-              </div>
+                    <span className="score">{job.match_score}%</span>
+                  </div>
+                  <p className="summary">{job.summary}</p>
+                  <button type="button" className="apply-button" onClick={() => applyToJob(job.job_id)}>
+                    Apply
+                  </button>
+                </article>
+              ))}
             </div>
-          ) : (
-            <div className="empty-state candidate-empty-state">
-              <p>Run a resume analysis to populate this recommendation workspace.</p>
-            </div>
-          )}
-        </article>
-      </section>
+          </article>
+        </section>
+      ) : null}
+
+      {activeTab === "applications" ? (
+        <section className="cards compact-cards">
+          {applications.map((application) => (
+            <article key={application.id} className="job-card">
+              <h3>{application.job_title}</h3>
+              <p>{application.company}</p>
+              <p className="summary">{application.status}</p>
+            </article>
+          ))}
+        </section>
+      ) : null}
     </div>
   );
 }

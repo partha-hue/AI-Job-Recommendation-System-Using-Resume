@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.db.models import Job
+from app.api.deps import require_role
+from app.db.models import Job, User
 from app.db.session import get_db
 from app.models.schemas import JobCreate, JobRead
 from app.repositories.jobs import list_jobs
@@ -27,7 +28,11 @@ def get_jobs(db: Session = Depends(get_db)) -> list[JobRead]:
 
 
 @router.post("", response_model=JobRead, status_code=status.HTTP_201_CREATED)
-def create_job(payload: JobCreate, db: Session = Depends(get_db)) -> JobRead:
+def create_job(
+    payload: JobCreate,
+    db: Session = Depends(get_db),
+    recruiter: User = Depends(require_role("recruiter")),
+) -> JobRead:
     existing = db.get(Job, payload.job_id)
     if existing:
         raise HTTPException(status_code=409, detail="Job with this ID already exists.")

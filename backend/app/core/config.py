@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
     environment: str = Field(default="development", alias="ENVIRONMENT")
     database_url: str = Field(default="sqlite:///./job_recommender.db", alias="DATABASE_URL")
+    secret_key: str = Field(default="change-me-for-production", alias="SECRET_KEY")
+    access_token_expire_minutes: int = 720
     allowed_origins: list[str] = Field(
         default_factory=lambda: [
             "http://localhost:5173",

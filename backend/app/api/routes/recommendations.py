@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_optional_user
+from app.db.models import CandidateProfile, User
 from app.models.schemas import (
     ResumeRecommendationRequest,
     ResumeRecommendationResponse,
@@ -17,7 +19,13 @@ router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 def recommend_from_text(
     payload: ResumeRecommendationRequest,
     db: Session = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
 ) -> ResumeRecommendationResponse:
+    if user and user.role == "candidate":
+        profile = db.get(CandidateProfile, user.id)
+        if profile:
+            profile.resume_text = payload.resume_text
+            db.commit()
     jobs = get_jobs_for_recommendation(db)
     result = generate_recommendations(payload.resume_text, jobs, payload.top_k)
     return ResumeRecommendationResponse(**result)

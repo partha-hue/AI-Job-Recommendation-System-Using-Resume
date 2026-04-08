@@ -1,7 +1,10 @@
+from app.api.routes.applications import router as applications_router
+from app.api.routes.auth import router as auth_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.jobs import router as jobs_router
+from app.api.routes.profiles import router as profiles_router
 from app.api.routes.recommendations import router as recommendations_router
 from app.core.config import get_settings
 from app.db.base import Base
@@ -34,4 +37,7 @@ def on_startup() -> None:
 
 
 app.include_router(jobs_router, prefix=settings.api_prefix)
+app.include_router(auth_router, prefix=settings.api_prefix)
+app.include_router(profiles_router, prefix=settings.api_prefix)
+app.include_router(applications_router, prefix=settings.api_prefix)
 app.include_router(recommendations_router, prefix=settings.api_prefix)
