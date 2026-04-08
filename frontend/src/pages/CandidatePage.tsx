@@ -62,13 +62,7 @@ export function CandidatePage() {
         <div>
           <p className="eyebrow">Candidate Match</p>
           <h2>Analyze resumes and review ranked matches in a balanced workspace.</h2>
-          <p className="section-copy">
-            The resume form stays compact on the left, and recommendation cards scroll independently on the right.
-          </p>
         </div>
-        <span className={`status-pill ${apiOnline ? "online" : "offline"}`}>
-          {apiOnline ? "Backend online" : "Backend offline"}
-        </span>
       </section>
 
       <section className="candidate-grid">
@@ -132,7 +126,6 @@ export function CandidatePage() {
               <p className="card-label">Recommendation Output</p>
               <h3>Ranked roles and matched skills</h3>
             </div>
-            <p className="section-copy">Results stay in one clean scroll area instead of stretching the whole page.</p>
           </div>
 
           {result ? (

@@ -57,10 +57,6 @@ export function JobsPage() {
         <div>
           <p className="eyebrow">Job Explorer</p>
           <h2>Browse active roles in a cleaner, recruiter-grade layout.</h2>
-          <p className="section-copy">
-            Use search and filters to scan openings, compare skill expectations, and move directly into application
-            flow.
-          </p>
         </div>
       </section>
 
@@ -91,7 +87,6 @@ export function JobsPage() {
             <p className="card-label">Filter Section</p>
             <h3>Refine the catalog</h3>
           </div>
-          <p className="section-copy">Search by role, company, location, or required skill.</p>
         </div>
 
         <div className="filter-grid">

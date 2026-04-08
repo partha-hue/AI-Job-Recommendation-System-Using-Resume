@@ -19,9 +19,6 @@ export function RecruiterPage() {
         <div>
           <p className="eyebrow">Recruiter Desk</p>
           <h2>Professional workspace for hiring operations and team-level visibility.</h2>
-          <p className="section-copy">
-            This screen gives the product a multi-page structure now, with a dedicated recruiter-facing dashboard.
-          </p>
         </div>
       </section>
 
@@ -50,13 +47,6 @@ export function RecruiterPage() {
         <article className="panel spotlight-panel">
           <p className="card-label">Recruiter Summary</p>
           <h3>Separate workspace, stronger product framing.</h3>
-          <p className="section-copy">
-            The app no longer looks like one long landing page. The home page acts as entry selection, while each
-            workspace has its own purpose and layout.
-          </p>
-          <div className="hero-note">
-            <strong>Next backend step:</strong> connect this screen to authenticated job management APIs.
-          </div>
         </article>
       </section>
     </div>

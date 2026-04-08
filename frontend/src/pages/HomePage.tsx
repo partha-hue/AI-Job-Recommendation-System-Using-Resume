@@ -27,10 +27,6 @@ export function HomePage() {
         <div className="landing-copy">
           <p className="eyebrow">Resume intelligence platform</p>
           <h1>Professional AI hiring experience, structured like a real product.</h1>
-          <p className="hero-copy">
-            Start from the home screen, then move into dedicated workspaces for candidates, jobs, and recruiter
-            operations instead of using a single long page.
-          </p>
           <div className="hero-actions">
             <Link to="/candidate" className="primary-link">
               Open Candidate Match
@@ -40,15 +36,12 @@ export function HomePage() {
         </div>
         <div className="hero-showcase">
           <div className="hero-metric">
-            <span>Live analysis</span>
             <strong>Resume upload + ranking</strong>
           </div>
           <div className="hero-metric">
-            <span>Professional structure</span>
             <strong>Home, dashboard, explorer, recruiter desk</strong>
           </div>
           <div className="hero-metric">
-            <span>Deployment ready</span>
             <strong>Frontend + FastAPI + persistent catalog</strong>
           </div>
         </div>
