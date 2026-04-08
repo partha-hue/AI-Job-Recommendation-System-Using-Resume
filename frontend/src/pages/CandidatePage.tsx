@@ -58,12 +58,12 @@ export function CandidatePage() {
 
   return (
     <div className="dashboard-view">
-      <section className="dashboard-header">
+      <section className="dashboard-header dashboard-header-tight">
         <div>
           <p className="eyebrow">Candidate Match</p>
-          <h2>Analyze resumes and return ranked job matches.</h2>
+          <h2>Analyze resumes and review ranked matches in a balanced workspace.</h2>
           <p className="section-copy">
-            Upload resume files or paste text, then review extracted skills, fit signals, and missing requirements.
+            The resume form stays compact on the left, and recommendation cards scroll independently on the right.
           </p>
         </div>
         <span className={`status-pill ${apiOnline ? "online" : "offline"}`}>
@@ -71,21 +71,28 @@ export function CandidatePage() {
         </span>
       </section>
 
-      <section className="content-grid">
-        <div className="panel">
+      <section className="candidate-grid">
+        <article className="panel candidate-form-panel">
+          <div className="panel-topline">
+            <div>
+              <p className="card-label">Resume Input</p>
+              <h3>Upload or paste CV content</h3>
+            </div>
+          </div>
+
           <form onSubmit={submitText} className="form-grid">
             <label>
               <span>Resume text</span>
               <textarea
-                rows={12}
+                rows={11}
                 value={resumeText}
                 onChange={(event) => setResumeText(event.target.value)}
                 placeholder="Paste the resume text here"
               />
             </label>
 
-            <div className="controls">
-              <label>
+            <div className="candidate-actions">
+              <label className="compact-field">
                 <span>Top recommendations</span>
                 <input
                   type="number"
@@ -95,15 +102,16 @@ export function CandidatePage() {
                   onChange={(event) => setTopK(Number(event.target.value))}
                 />
               </label>
+
               <button type="submit" disabled={loading}>
                 {loading ? "Analyzing..." : "Analyze Text"}
               </button>
             </div>
           </form>
 
-          <div className="upload-block">
+          <div className="upload-block candidate-upload-block">
             <label className="file-picker">
-              <span>Resume file</span>
+              <span>Attached CV</span>
               <input
                 type="file"
                 accept=".txt,.pdf,.docx"
@@ -116,17 +124,20 @@ export function CandidatePage() {
           </div>
 
           {error ? <p className="error-banner">{error}</p> : null}
-        </div>
+        </article>
 
-        <div className="panel result-panel">
-          <div className="result-header">
-            <h3>Recommendation Output</h3>
-            <p>API-driven results appear here with scoring, reasoning, and skills.</p>
+        <article className="panel candidate-results-panel">
+          <div className="panel-topline">
+            <div>
+              <p className="card-label">Recommendation Output</p>
+              <h3>Ranked roles and matched skills</h3>
+            </div>
+            <p className="section-copy">Results stay in one clean scroll area instead of stretching the whole page.</p>
           </div>
 
           {result ? (
-            <>
-              <div className="skills-row">
+            <div className="candidate-results-scroll">
+              <div className="skills-row candidate-skills-row">
                 <span>Extracted skills</span>
                 <div className="chip-wrap">
                   {result.extracted_skills.map((skill) => (
@@ -136,6 +147,7 @@ export function CandidatePage() {
                   ))}
                 </div>
               </div>
+
               <div className="cards">
                 {result.recommendations.map((job) => (
                   <article key={job.job_id} className="job-card animated-card">
@@ -146,8 +158,10 @@ export function CandidatePage() {
                       </div>
                       <span className="score">{job.match_score}%</span>
                     </div>
+
                     <p className="location">{job.location}</p>
                     <p className="summary">{job.summary}</p>
+
                     <div className="chip-wrap">
                       {job.matched_skills.map((skill) => (
                         <span key={skill} className="chip matched">
@@ -155,24 +169,26 @@ export function CandidatePage() {
                         </span>
                       ))}
                     </div>
+
                     <ul className="reason-list">
                       {job.reasons.map((reason) => (
                         <li key={reason}>{reason}</li>
                       ))}
                     </ul>
+
                     {job.missing_skills.length ? (
                       <p className="missing">Missing: {job.missing_skills.join(", ")}</p>
                     ) : null}
                   </article>
                 ))}
               </div>
-            </>
+            </div>
           ) : (
-            <div className="empty-state">
-              <p>Run a resume analysis to populate this workspace.</p>
+            <div className="empty-state candidate-empty-state">
+              <p>Run a resume analysis to populate this recommendation workspace.</p>
             </div>
           )}
-        </div>
+        </article>
       </section>
     </div>
   );

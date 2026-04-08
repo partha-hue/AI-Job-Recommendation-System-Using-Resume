@@ -339,6 +339,78 @@ button,
   min-height: 560px;
 }
 
+.panel-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.candidate-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.15fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.candidate-form-panel,
+.candidate-results-panel {
+  min-height: calc(100vh - 180px);
+}
+
+.candidate-form-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.candidate-results-panel {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.candidate-results-scroll {
+  min-height: 0;
+  max-height: calc(100vh - 290px);
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.candidate-results-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.candidate-results-scroll::-webkit-scrollbar-thumb {
+  background: rgba(103, 128, 190, 0.28);
+  border-radius: 999px;
+}
+
+.candidate-actions {
+  display: grid;
+  grid-template-columns: 220px minmax(160px, 220px);
+  gap: 12px;
+  align-items: end;
+}
+
+.compact-field {
+  display: grid;
+  gap: 8px;
+}
+
+.candidate-upload-block {
+  align-content: start;
+}
+
+.candidate-skills-row {
+  margin-bottom: 18px;
+}
+
+.candidate-empty-state {
+  min-height: 420px;
+}
+
 .form-grid,
 .upload-block,
 .skills-row {
@@ -547,7 +619,8 @@ button:hover,
   .stats-grid,
   .stats-grid-compact,
   .filter-grid,
-  .jobs-list-grid {
+  .jobs-list-grid,
+  .candidate-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -582,11 +655,23 @@ button:hover,
 
   .dashboard-header,
   .filter-topline,
+  .panel-topline,
   .job-card-header,
   .job-meta-row,
   .job-card-columns {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .candidate-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .candidate-form-panel,
+  .candidate-results-panel,
+  .candidate-results-scroll {
+    min-height: auto;
+    max-height: none;
   }
 }
