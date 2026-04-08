@@ -1,0 +1,9 @@
+Parth Sharma
+Python Developer | Full Stack Engineer
+
+Summary
+Built resume screening and job recommendation tools using Python, FastAPI, SQL, React, and TypeScript.
+Experience with Docker deployments, REST API integration, machine learning pipelines, NLP, AWS, and CI/CD.
+
+Skills
+Python, FastAPI, SQL, PostgreSQL, React, TypeScript, Docker, AWS, NLP, Machine Learning, Testing

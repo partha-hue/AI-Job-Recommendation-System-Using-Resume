@@ -1,0 +1,56 @@
+[
+  {
+    "job_id": "job-001",
+    "title": "Machine Learning Engineer",
+    "company": "Apex Analytics",
+    "location": "Bengaluru, India",
+    "summary": "Build and deploy machine learning services for resume parsing and recommendation workflows.",
+    "required_skills": ["python", "machine learning", "fastapi", "sql", "docker", "nlp"],
+    "preferred_skills": ["aws", "kubernetes", "pandas", "scikit-learn"]
+  },
+  {
+    "job_id": "job-002",
+    "title": "Backend Python Developer",
+    "company": "CloudStride",
+    "location": "Hyderabad, India",
+    "summary": "Develop API platforms, integrate databases, and ship scalable backend systems.",
+    "required_skills": ["python", "fastapi", "sql", "rest api", "docker"],
+    "preferred_skills": ["postgresql", "redis", "ci/cd", "testing"]
+  },
+  {
+    "job_id": "job-003",
+    "title": "Full Stack Developer",
+    "company": "TalentMesh",
+    "location": "Remote",
+    "summary": "Build user-facing dashboards and backend services for recruitment intelligence products.",
+    "required_skills": ["react", "typescript", "python", "fastapi", "css", "sql"],
+    "preferred_skills": ["vite", "docker", "figma", "jwt"]
+  },
+  {
+    "job_id": "job-004",
+    "title": "Data Scientist",
+    "company": "InsightForge",
+    "location": "Pune, India",
+    "summary": "Train recommendation models, analyze hiring data, and communicate insights to stakeholders.",
+    "required_skills": ["python", "pandas", "machine learning", "sql", "statistics"],
+    "preferred_skills": ["nlp", "data visualization", "tensorflow", "aws"]
+  },
+  {
+    "job_id": "job-005",
+    "title": "MLOps Engineer",
+    "company": "ScaleLoop",
+    "location": "Chennai, India",
+    "summary": "Operationalize machine learning pipelines with CI/CD, containers, and observability.",
+    "required_skills": ["python", "docker", "kubernetes", "aws", "ci/cd", "monitoring"],
+    "preferred_skills": ["terraform", "fastapi", "linux", "mlflow"]
+  },
+  {
+    "job_id": "job-006",
+    "title": "AI Product Engineer",
+    "company": "NovaHire",
+    "location": "Mumbai, India",
+    "summary": "Ship production AI features across frontend and backend for recruiter workflows.",
+    "required_skills": ["python", "react", "typescript", "nlp", "api integration", "docker"],
+    "preferred_skills": ["prompt engineering", "fastapi", "postgresql", "testing"]
+  }
+]
