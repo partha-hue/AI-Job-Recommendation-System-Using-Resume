@@ -41,9 +41,6 @@ export function HomePage() {
           <div className="hero-metric">
             <strong>Home, dashboard, explorer, recruiter desk</strong>
           </div>
-          <div className="hero-metric">
-            <strong>Frontend + FastAPI + persistent catalog</strong>
-          </div>
         </div>
       </header>
 
